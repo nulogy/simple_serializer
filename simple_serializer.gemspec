@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["seank@nulogy.com"]
   spec.summary       = %q{Very simple framelet for serializing/deserializing objects to hashes.}
   spec.description   = %q{Very simple framelet for serializing/deserializing objects to hashes.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/nulogy/simple_serializer"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
