@@ -6,7 +6,7 @@ describe SimpleSerializer::Deserializer do
   let(:object) { double }
 
   class TestDeserializer < SimpleSerializer::Deserializer
-    data_attributes :field1
+    attributes :field1
   end
 
   describe 'deserialize' do
@@ -20,10 +20,10 @@ describe SimpleSerializer::Deserializer do
 
     describe 'attribute value transformation' do
       class TestTransformingDeserializer < SimpleSerializer::Deserializer
-        data_attributes :field1
+        attributes :field1
 
-        def field1(datum)
-          datum + 1
+        def field1
+          data[:field1] + 1
         end
       end
 
@@ -35,12 +35,12 @@ describe SimpleSerializer::Deserializer do
       end
     end
 
-    describe "attribute key transformation" do
+    describe 'attribute key transformation' do
       class TestMappingDeserializer < SimpleSerializer::Deserializer
-        data_attributes :association_id
+        attributes :association
 
-        def set_association_id(datum)
-          object.association = datum
+        def set_association
+          object.association = data[:association_id]
         end
       end
 

@@ -28,16 +28,16 @@ class Deserializer
       base._attributes = []
     end
 
-    def data_attributes(*attrs)
+    def attributes(*attrs)
       @_attributes.concat attrs
 
       attrs.each do |attr|
-        define_method attr do |datum|
-          datum
+        define_method attr do
+          @data[attr]
         end unless method_defined?(attr)
 
-        define_method "set_#{attr}" do |datum|
-          object.send("#{attr}=", send(attr, datum))
+        define_method "set_#{attr}" do
+          object.send("#{attr}=", send(attr))
         end unless method_defined?("set_#{attr}")
       end
     end
@@ -51,7 +51,7 @@ class Deserializer
     end
   end
 
-  attr_accessor :object
+  attr_reader :object, :data
 
   def initialize(object, data)
     @object = object
@@ -60,7 +60,7 @@ class Deserializer
 
   def deserialize
     self.class._attributes.dup.each do |name|
-      send("set_#{name}", @data[name])
+      send("set_#{name}")
     end
     object
   end
