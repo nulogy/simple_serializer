@@ -1,14 +1,15 @@
 # Simple framelet for deserialization
 #
 #    class SomeDeserializer < SimpleSerializer::Deserializer
-#      data_attributes :site_id, :name, :category_id, :integration_key
+#      object_attributes :site_id, :name, :category, :integration_key
 #
-#      def integration_key(old_integration_key)
-#        "XX#{@data[:other_attr]}XX#{old_integration_key}XX"
+#      def integration_key
+#        "XX#{data[:other_attr]}XX#{data[:integration_key]}XX"
 #      end
 #
-#      def set_category_id(category_id)
-#        object.category = InventoryStatusCategory.from_id(category_id)
+#      # Set a field regardless of presence in data hash
+#      def set_site_id
+#        object.site_id = 99
 #      end
 #    end
 #
@@ -22,14 +23,14 @@
 module SimpleSerializer
 class Deserializer
   class << self
-    attr_accessor :_attributes
+    attr_accessor :_object_attributes
 
     def inherited(base)
-      base._attributes = []
+      base._object_attributes = []
     end
 
-    def attributes(*attrs)
-      @_attributes.concat attrs
+    def object_attributes(*attrs)
+      @_object_attributes.concat attrs
 
       attrs.each do |attr|
         define_method attr do
@@ -37,7 +38,7 @@ class Deserializer
         end unless method_defined?(attr)
 
         define_method "set_#{attr}" do
-          object.send("#{attr}=", send(attr))
+          object.send("#{attr}=", send(attr)) if @data.has_key?(attr)
         end unless method_defined?("set_#{attr}")
       end
     end
@@ -59,7 +60,7 @@ class Deserializer
   end
 
   def deserialize
-    self.class._attributes.dup.each do |name|
+    self.class._object_attributes.dup.each do |name|
       send("set_#{name}")
     end
     object

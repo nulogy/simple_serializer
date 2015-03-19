@@ -6,7 +6,7 @@ describe SimpleSerializer::Deserializer do
   let(:object) { double }
 
   class TestDeserializer < SimpleSerializer::Deserializer
-    attributes :field1
+    object_attributes :field1
   end
 
   describe 'deserialize' do
@@ -18,9 +18,15 @@ describe SimpleSerializer::Deserializer do
       expect(result).to be object
     end
 
+    it 'does not set attributes when the hash key is not set' do
+      expect(object).to_not receive(:field1=)
+
+      TestDeserializer.deserialize(object, {})
+    end
+
     describe 'attribute value transformation' do
       class TestTransformingDeserializer < SimpleSerializer::Deserializer
-        attributes :field1
+        object_attributes :field1
 
         def field1
           data[:field1] + 1
@@ -35,20 +41,19 @@ describe SimpleSerializer::Deserializer do
       end
     end
 
-    describe 'attribute key transformation' do
+    describe 'attribute setter override' do
       class TestMappingDeserializer < SimpleSerializer::Deserializer
-        attributes :association
+        object_attributes :association
 
         def set_association
-          object.association = data[:association_id]
+          object.association = 'static'
         end
       end
 
-      it 'maps keys' do
-        attrs = {association_id: 1}
-        expect(object).to receive(:association=).with(1)
+      it 'maps keys regardless of presence in data hash' do
+        expect(object).to receive(:association=).with('static')
 
-        TestMappingDeserializer.deserialize(object, attrs)
+        TestMappingDeserializer.deserialize(object, {})
       end
     end
   end
