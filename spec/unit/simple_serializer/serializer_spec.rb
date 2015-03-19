@@ -6,7 +6,7 @@ describe SimpleSerializer::Serializer do
   let(:object) { double }
 
   class TestSerializer < SimpleSerializer::Serializer
-    attributes :field1, :field2
+    hash_attributes :field1, :field2
   end
 
   describe 'serialize' do
@@ -20,7 +20,7 @@ describe SimpleSerializer::Serializer do
 
     describe 'value transformation' do
       class TestTransformingSerializer < SimpleSerializer::Serializer
-        attributes :field1
+        hash_attributes :field1
 
         def field1
           object.field1 + 1

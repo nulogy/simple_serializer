@@ -4,7 +4,7 @@
 # and dependence on ActiveModel
 #
 #    class SomeSerializer < SimpleSerializer::Serializer
-#      attributes :id, :name, :category_id, :errors
+#      hash_attributes :id, :name, :category_id, :errors
 #
 #      def category_id
 #        object.category.try(:id)
@@ -25,14 +25,14 @@
 module SimpleSerializer
   class Serializer
     class << self
-      attr_accessor :_attributes
+      attr_accessor :_hash_attributes
 
       def inherited(base)
-        base._attributes = []
+        base._hash_attributes = []
       end
 
-      def attributes(*attrs)
-        @_attributes.concat attrs
+      def hash_attributes(*attrs)
+        @_hash_attributes.concat attrs
 
         attrs.each do |attr|
           define_method attr do
@@ -58,15 +58,15 @@ module SimpleSerializer
       @object = object
     end
 
-    def attributes
-      self.class._attributes.dup.each_with_object({}) do |name, hash|
+    def extract_attributes
+      self.class._hash_attributes.dup.each_with_object({}) do |name, hash|
         hash[name] = send(name)
       end
     end
 
     def serialize(_={})
       return nil if object.nil?
-      attributes
+      extract_attributes
     end
     alias :as_json :serialize
   end
