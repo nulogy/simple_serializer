@@ -35,6 +35,18 @@ describe SimpleSerializer::Serializer do
         expect(result).to eq({field1: 2})
       end
     end
+
+    # This should work in a Rails controller when the ActiveModelSerializers gem is loaded:
+    #
+    #   render json: object, serializer: TestSerializer
+    it 'is api-compatible with ActiveModel::Serializer' do
+      object = double(field1: 1, field2: 2)
+      options = {}
+
+      result = TestSerializer.new(object, options).serialize(options)
+
+      expect(result).to eq({field1: 1, field2: 2})
+    end
   end
 
   describe 'serialize_array' do
