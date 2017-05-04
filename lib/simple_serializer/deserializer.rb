@@ -21,49 +21,49 @@
 #    SomeDeserializer.deserialize_array([object1, object2, ...], [data1, data2, ...])
 #
 module SimpleSerializer
-class Deserializer
-  class << self
-    attr_accessor :_object_attributes
+  class Deserializer
+    class << self
+      attr_accessor :_object_attributes
 
-    def inherited(base)
-      base._object_attributes = []
-    end
+      def inherited(base)
+        base._object_attributes = []
+      end
 
-    def object_attributes(*attrs)
-      @_object_attributes.concat attrs
+      def object_attributes(*attrs)
+        @_object_attributes.concat attrs
 
-      attrs.each do |attr|
-        define_method attr do
-          @data[attr]
-        end unless method_defined?(attr)
+        attrs.each do |attr|
+          define_method attr do
+            @data[attr]
+          end unless method_defined?(attr)
 
-        define_method "set_#{attr}" do
-          object.send("#{attr}=", send(attr)) if @data.has_key?(attr)
-        end unless method_defined?("set_#{attr}")
+          define_method "set_#{attr}" do
+            object.send("#{attr}=", send(attr)) if @data.has_key?(attr)
+          end unless method_defined?("set_#{attr}")
+        end
+      end
+
+      def deserialize_array(objects, data)
+        objects.zip(data).map { |obj, datum| deserialize(obj, datum) }
+      end
+
+      def deserialize(object, data)
+        self.new(object, data).deserialize
       end
     end
 
-    def deserialize_array(objects, data)
-      objects.zip(data).map { |obj, datum| deserialize(obj, datum) }
+    attr_reader :object, :data
+
+    def initialize(object, data)
+      @object = object
+      @data = data
     end
 
-    def deserialize(object, data)
-      self.new(object, data).deserialize
+    def deserialize
+      self.class._object_attributes.dup.each do |name|
+        send("set_#{name}")
+      end
+      object
     end
   end
-
-  attr_reader :object, :data
-
-  def initialize(object, data)
-    @object = object
-    @data = data
-  end
-
-  def deserialize
-    self.class._object_attributes.dup.each do |name|
-      send("set_#{name}")
-    end
-    object
-  end
-end
 end

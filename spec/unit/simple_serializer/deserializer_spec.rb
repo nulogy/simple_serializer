@@ -1,5 +1,5 @@
 require 'unit_spec_helper'
-require 'simple_serializer/deserializer'
+require 'simple_serializer'
 
 describe SimpleSerializer::Deserializer do
 
