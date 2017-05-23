@@ -7,7 +7,7 @@ and NO ROOT KEYS!
 
 # Serializer Usage
 
-```
+```ruby
 class SomeSerializer < SimpleSerializer::Serializer
   hash_attributes :id, :name, :category_id, :errors
 
@@ -23,7 +23,7 @@ end
 
 Use it:
 
-```
+```ruby
 SomeSerializer.serialize(object)
 SomeSerializer.new(object).serialize
 
@@ -32,7 +32,7 @@ SomeSerializer.serialize_array([object])
 
 # Deserializer Usage
 
-```
+```ruby
 class SomeDeserializer < SimpleSerializer::Deserializer
   object_attributes :site_id, :name, :category_id, :integration_key
 
@@ -48,7 +48,7 @@ end
 
 Use it:
 
-```
+```ruby
 SomeDeserializer.deserialize(object, data)
 SomeDeserializer.new(object, data).deserialize
 
